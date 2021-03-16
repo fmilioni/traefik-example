@@ -1,0 +1,27 @@
+providers:
+  docker: {}
+  file:
+    filename: /etc/traefik/dynamic.yml
+
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+
+certificatesResolvers:
+  le:
+    acme:
+      email: YOUR_EMAIL
+      storage: acme.json
+      httpChallenge:
+        entryPoint: web
+  cloudflare:
+    acme:
+      email: YOUR_EMAIL
+      storage: acme_cf.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"

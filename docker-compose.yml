@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  trafiek:
+    container_name: traefik
+    image: traefik:latest
+    restart: always
+    labels:
+      traefik.http.routers.http_catchall.rule: HostRegexp(`{any:.+}`)
+      traefik.http.routers.http_catchall.entrypoints: web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/etc/traefik/traefik.yml
+    networks:
+      - reverse-proxy
+    ports:
+      - "8080:80"
+
+  whoami-1:
+    container_name: whoami-1
+    image: traefik/whoami
+    labels:
+      traefik.enable: true
+      traefik.docker.network: reverse-proxy
+      traefik.http.routers.whoami-1.rule: Host(`whoami-1.127.0.0.1.xip.io`)
+    networks:
+      - reverse-proxy
+
+  whoami-2:
+    container_name: whoami-2
+    image: traefik/whoami
+    labels:
+      traefik.enable: true
+      traefik.docker.network: reverse-proxy
+      traefik.http.routers.whoami-2.rule: Host(`whoami-2.127.0.0.1.xip.io`)
+    networks:
+      - reverse-proxy
+
+networks:
+  reverse-proxy:
+    name: reverse-proxy

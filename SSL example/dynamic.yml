@@ -1,0 +1,5 @@
+tls:
+  certificates:
+    - certFile: /SSL/DOMAIN.cert
+      keyFile: /SSL/DOMAIN.key
+

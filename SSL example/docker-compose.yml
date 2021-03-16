@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  trafiek:
+    container_name: traefik
+    image: traefik:latest
+    restart: always
+    labels:
+      traefik.http.routers.http_catchall.rule: HostRegexp(`{any:.+}`)
+      traefik.http.routers.http_catchall.entrypoints: web
+      traefik.http.routers.http_catchall.middlewares: https_redirect
+      traefik.http.middlewares.https_redirect.redirectscheme.scheme: https
+      traefik.http.middlewares.https_redirect.redirectscheme.permanent: true
+    environment:
+      - CF_API_EMAIL=YOUR_CLOUDFLARE_EMAIL
+      - CF_API_KEY=YOUR_CLOUDFLARE_API_KEY
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/acme.json:/acme.json
+      - /root/acme_cf.json:/acme_cf.json
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./dynamic.yml:/etc/traefik/dynamic.yml
+      - ./SSL:/SSL
+    networks:
+      - reverse-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+
+networks:
+  reverse-proxy:
+    name: reverse-proxy
